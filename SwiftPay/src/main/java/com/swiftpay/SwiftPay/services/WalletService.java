@@ -34,4 +34,7 @@ public class WalletService {
         return walletRepository.findById(id).orElse(null);
     }
 
+    public void saveWallet(Wallet wallet) {
+        walletRepository.save(wallet);
+    }
 }

@@ -23,11 +23,11 @@ public class Transaction {
 
     @ManyToOne
     @JoinColumn(name = "from_user_id")
-    private User fromUser;
+    private Wallet senderWallet;
 
     @ManyToOne
     @JoinColumn(name = "to_user_id")
-    private User toUser;
+    private Wallet receiverWallet;
 
     private Double amount;
 
