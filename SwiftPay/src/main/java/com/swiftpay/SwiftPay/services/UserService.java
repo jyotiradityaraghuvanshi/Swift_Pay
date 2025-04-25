@@ -1,6 +1,7 @@
 package com.swiftpay.SwiftPay.services;
 
 
+import com.swiftpay.SwiftPay.Exception.UserNotFoundException;
 import com.swiftpay.SwiftPay.entity.User;
 import com.swiftpay.SwiftPay.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +19,12 @@ public class UserService {
 
 
     public User getUser(Long id){
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User with id " + id + " does not found"));
     }
 
 
-    public User checkUser(Long userId) {
-        return userRepository.findById(userId).orElse(null);
-    }
+//    public User checkUser(Long userId) {
+//        return userRepository.findById(userId).orElse(null);
+//    }
+
 }

@@ -6,6 +6,9 @@ import com.swiftpay.SwiftPay.entity.Transaction;
 import com.swiftpay.SwiftPay.entity.Wallet;
 import com.swiftpay.SwiftPay.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,14 +22,14 @@ public class TransactionController {
 
 
     @PostMapping("/send")
-    public Transaction transferMoney(@RequestBody TransactionRequestDto transactionDetails){
-        return transactionService.sendMoney(transactionDetails);
+    public ResponseEntity<Transaction> transferMoney(@RequestBody TransactionRequestDto transactionDetails){
+        return new ResponseEntity<>(transactionService.sendMoney(transactionDetails) , HttpStatus.OK);
     }
 
 
     @GetMapping("/history/{walletId}")
-    public List<Transaction>  transactionHistory(@PathVariable("walletId") Long walletId){
-        return transactionService.getHistory(walletId);
+    public ResponseEntity<List<Transaction>>  transactionHistory(@PathVariable("walletId") Long walletId){
+        return new ResponseEntity<>(transactionService.getHistory(walletId) , HttpStatus.OK);
     }
 
 }

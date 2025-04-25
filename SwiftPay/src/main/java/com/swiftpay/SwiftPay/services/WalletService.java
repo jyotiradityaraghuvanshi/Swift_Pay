@@ -1,6 +1,8 @@
 package com.swiftpay.SwiftPay.services;
 
 
+import com.swiftpay.SwiftPay.Exception.ResourceNotFoundException;
+import com.swiftpay.SwiftPay.Exception.UserNotFoundException;
 import com.swiftpay.SwiftPay.entity.User;
 import com.swiftpay.SwiftPay.entity.Wallet;
 import com.swiftpay.SwiftPay.repository.WalletRepository;
@@ -20,7 +22,10 @@ public class WalletService {
 
     public Wallet createWallet(Long userId){
 
-        User user = userService.checkUser(userId);
+        User user = userService.getUser(userId);
+        if(user == null){
+            throw new UserNotFoundException("User with id " + userId + " does not found");
+        }
 
         Wallet wallet = new Wallet();
         wallet.setUser(user);
@@ -31,7 +36,7 @@ public class WalletService {
     }
 
     public Wallet getWallet(Long id){
-        return walletRepository.findById(id).orElse(null);
+        return walletRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Wallet not found for id " + id));
     }
 
     public void saveWallet(Wallet wallet) {
