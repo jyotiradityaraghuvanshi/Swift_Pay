@@ -20,7 +20,7 @@ public class Wallet {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id" , nullable = false , unique = true)
     private User user;
 
     private Double balance;

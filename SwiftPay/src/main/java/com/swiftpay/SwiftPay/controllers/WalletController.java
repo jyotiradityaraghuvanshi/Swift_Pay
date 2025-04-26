@@ -1,6 +1,8 @@
 package com.swiftpay.SwiftPay.controllers;
 
 
+import com.swiftpay.SwiftPay.dto.RequestDto.WalletRequestDto;
+import com.swiftpay.SwiftPay.dto.ResponseDto.WalletResponseDto;
 import com.swiftpay.SwiftPay.entity.User;
 import com.swiftpay.SwiftPay.entity.Wallet;
 import com.swiftpay.SwiftPay.services.WalletService;
@@ -18,13 +20,18 @@ public class WalletController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<Wallet> createsWallet(@RequestParam Long id){
-        return new ResponseEntity<>(walletService.createWallet(id) , HttpStatus.CREATED);
+    public ResponseEntity<WalletResponseDto> createsWallet(@RequestBody WalletRequestDto walletRequestDto){
+        return new ResponseEntity<>(walletService.createWallet(walletRequestDto) , HttpStatus.CREATED);
     }
 
-    @GetMapping("/getWallet/{userId}")
-    public ResponseEntity<Wallet> getWallets(@PathVariable("userId") Long id){
+    @GetMapping("/getWallet/{walletId}")
+    public ResponseEntity<Wallet> getWallets(@PathVariable("walletId") Long id){
         return new ResponseEntity<>(walletService.getWallet(id) , HttpStatus.FOUND);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<WalletResponseDto> getWalletByUserId(@PathVariable Long userId){
+        return new ResponseEntity<>(walletService.getWalletByUserId(userId) , HttpStatus.FOUND);
     }
 
 }

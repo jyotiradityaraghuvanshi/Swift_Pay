@@ -1,11 +1,19 @@
 package com.swiftpay.SwiftPay.services;
 
 
+import com.swiftpay.SwiftPay.Exception.EmailAlreadyExistException;
 import com.swiftpay.SwiftPay.Exception.UserNotFoundException;
+import com.swiftpay.SwiftPay.dto.RequestDto.UserRequestDto;
+import com.swiftpay.SwiftPay.dto.ResponseDto.UserResponseDto;
 import com.swiftpay.SwiftPay.entity.User;
 import com.swiftpay.SwiftPay.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -13,18 +21,74 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public User createUser(User user){
-        return userRepository.save(user);
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private WalletService walletService;
+
+    public UserResponseDto createUser(UserRequestDto userRequestDto){
+
+        if(userRepository.existsByEmail(userRequestDto.getEmail())){
+            throw new EmailAlreadyExistException("Email already exists: " + userRequestDto.getEmail());
+        }
+
+        User user = convertDtoToEntity(userRequestDto);
+
+        userRepository.save(user);
+
+
+        return convertEntityToDto(user);
     }
 
 
-    public User getUser(Long id){
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User with id " + id + " does not found"));
+    public UserResponseDto getUser(Long id){
+        Optional<User> user = userRepository.findById(id);
+        if(user.isEmpty()){
+            throw new UserNotFoundException("User with id " + id);
+        }
+
+        return convertEntityToDto(user.get());
     }
 
 
-//    public User checkUser(Long userId) {
-//        return userRepository.findById(userId).orElse(null);
-//    }
+    public User getUserForServices(Long userId){
+        return userRepository.findById(userId).orElseThrow(null);
+    }
+
+    public List<UserResponseDto> getAllUser() {
+        List<User> userList = userRepository.findAll();
+        return userList
+                .stream()
+                .map(this::convertEntityToDto)
+                .toList();
+    }
+
+
+
+
+
+    private UserResponseDto convertEntityToDto(User user){
+        return new UserResponseDto(
+                user.getName(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getCreatedAt()
+        );
+    }
+
+    private User convertDtoToEntity(UserRequestDto userRequestDto){
+
+        User user = new User();
+        user.setName(userRequestDto.getName());
+        user.setEmail(userRequestDto.getEmail());
+        user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
+        user.setPhoneNumber(userRequestDto.getPhoneNumber());
+        user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+
+        return user;
+    }
+
+
 
 }
