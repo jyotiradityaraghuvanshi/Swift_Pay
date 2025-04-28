@@ -1,22 +1,23 @@
 package com.swiftpay.SwiftPay.dto.RequestDto;
 
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TransactionRequestDto {
+public class UserLoginRequestDto {
 
-    public Long senderWalletId;
+    @Email
+    public String email;
 
-    public Long receiverWalletId;
-
-    public double amount;
+    @NotBlank
+    public String password;
 
 }

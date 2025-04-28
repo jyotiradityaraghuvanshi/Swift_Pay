@@ -1,22 +1,27 @@
-package com.swiftpay.SwiftPay.dto.RequestDto;
+package com.swiftpay.SwiftPay.dto.ResponseDto;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TransactionRequestDto {
+public class TransactionResponseDto {
+
+    public Long transactionId;
 
     public Long senderWalletId;
 
     public Long receiverWalletId;
 
-    public double amount;
+    public Double amount;
+
+    public Timestamp transactionTime;
 
 }

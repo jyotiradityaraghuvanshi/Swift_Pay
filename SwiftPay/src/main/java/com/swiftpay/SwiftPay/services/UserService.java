@@ -2,11 +2,14 @@ package com.swiftpay.SwiftPay.services;
 
 
 import com.swiftpay.SwiftPay.Exception.EmailAlreadyExistException;
+import com.swiftpay.SwiftPay.Exception.PasswordMismatchException;
 import com.swiftpay.SwiftPay.Exception.UserNotFoundException;
+import com.swiftpay.SwiftPay.dto.RequestDto.UserLoginRequestDto;
 import com.swiftpay.SwiftPay.dto.RequestDto.UserRequestDto;
 import com.swiftpay.SwiftPay.dto.ResponseDto.UserResponseDto;
 import com.swiftpay.SwiftPay.entity.User;
 import com.swiftpay.SwiftPay.repository.UserRepository;
+import com.swiftpay.SwiftPay.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -64,7 +67,25 @@ public class UserService {
                 .toList();
     }
 
+    public String loginUser(UserLoginRequestDto userLoginRequestDto) {
+        Optional<User> userOptional = userRepository.findByEmail(userLoginRequestDto.getEmail());
+        if(userOptional.isEmpty()){
+            throw new UserNotFoundException("User with email " + userLoginRequestDto.getEmail() + " does not found");
+        }
 
+        User user = userOptional.get();
+        String enteredPassword = userLoginRequestDto.getPassword().trim();
+        String storedPassword = user.getPassword().trim();
+
+        // always remember while comparing stored password of DB to given password by user do not compare them directly
+        // because the stored password in DB is hashed and given passcode is simple one so we cannot directly compare these password
+        // directly use password encoder matches method to compare this different style passwords*/
+        if (!passwordEncoder.matches(enteredPassword, storedPassword)) {
+            throw new PasswordMismatchException("Incorrect Password");
+        }
+
+        return JwtUtil.generateToken(user.getEmail());
+    }
 
 
 
@@ -88,7 +109,5 @@ public class UserService {
 
         return user;
     }
-
-
 
 }
