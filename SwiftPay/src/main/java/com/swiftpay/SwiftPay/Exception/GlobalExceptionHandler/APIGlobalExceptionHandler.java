@@ -55,5 +55,15 @@ public class APIGlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<String> handleRefreshTokenExpireException(TokenExpiredException e){
+        return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<String> handleInvalidTokenRequest(InvalidTokenException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
 
 }

@@ -1,6 +1,10 @@
 package com.swiftpay.SwiftPay.filters;
 
+import com.swiftpay.SwiftPay.Exception.InvalidTokenException;
+import com.swiftpay.SwiftPay.Exception.TokenExpiredException;
 import com.swiftpay.SwiftPay.utils.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -37,7 +41,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // ✅ 2. Check token for other APIs
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwtToken = authHeader.substring(7); // Remove 'Bearer ' prefix
-            username = JwtUtil.extractUsername(jwtToken);
+            try{
+                username = JwtUtil.extractUsername(jwtToken);
+            }catch (ExpiredJwtException e){
+                throw new TokenExpiredException("JWT token expired. Please login again or Use refresh token.");
+            }catch (JwtException e){
+                throw new InvalidTokenException("The provided token is Invalid/Wrong");
+            }
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
