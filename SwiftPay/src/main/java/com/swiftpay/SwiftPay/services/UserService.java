@@ -62,7 +62,7 @@ public class UserService {
 
 
     public User getUserForServices(Long userId){
-        return userRepository.findById(userId).orElseThrow(null);
+        return userRepository.findById(userId).orElseThrow(()->{throw new UserNotFoundException("User Not found for this userId" + userId);});
     }
 
     public List<UserResponseDto> getAllUser() {
@@ -90,7 +90,7 @@ public class UserService {
             throw new PasswordMismatchException("Incorrect Password");
         }
 
-        String accessToken = JwtUtil.generateToken(user.getEmail());
+        String accessToken = JwtUtil.generateToken(user.getEmail() , user.getRole());
         RefreshToken refreshToken = refreshTokenService.replaceRefreshToken(user);
 
         Map<String , String> map = new HashMap<>();

@@ -35,7 +35,7 @@ public class AuthController {
         String refreshTokenRequest = request.get("refreshToken");
         RefreshToken refreshToken = refreshTokenService.verifyRefreshToken(refreshTokenRequest);
 
-        String newAccessToken = JwtUtil.generateToken(refreshToken.getUser().getEmail());
+        String newAccessToken = JwtUtil.generateToken(refreshToken.getUser().getEmail() , refreshToken.getUser().getRole());
 
         Map<String, String> response = new HashMap<>();
         response.put("accessToken", newAccessToken);

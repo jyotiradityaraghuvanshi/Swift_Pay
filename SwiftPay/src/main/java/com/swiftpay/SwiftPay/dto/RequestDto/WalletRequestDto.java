@@ -12,4 +12,6 @@ public class WalletRequestDto {
 
     public Long userId;
 
+    public Double balance;
+
 }

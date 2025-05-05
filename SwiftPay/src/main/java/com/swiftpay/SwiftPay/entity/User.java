@@ -1,5 +1,6 @@
 package com.swiftpay.SwiftPay.entity;
 
+import com.swiftpay.SwiftPay.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,5 +29,8 @@ public class User {
     private String phoneNumber;
 
     private Timestamp createdAt;
+
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER; // default Role for everyOne
 
 }

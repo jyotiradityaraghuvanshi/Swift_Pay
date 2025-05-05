@@ -11,12 +11,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.util.Collections;
+import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -42,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwtToken = authHeader.substring(7); // Remove 'Bearer ' prefix
             try{
-                username = JwtUtil.extractUsername(jwtToken);
+                username = JwtUtil.validateToken(jwtToken);
             }catch (ExpiredJwtException e){
                 throw new TokenExpiredException("JWT token expired. Please login again or Use refresh token.");
             }catch (JwtException e){
@@ -51,11 +54,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            String role = JwtUtil.extractUserRole(jwtToken); // extract role from token
+            List<GrantedAuthority> authorities = List.of(
+                    new SimpleGrantedAuthority("ROLE_" + role)
+            );
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(
                             username, // principal
                             null,     // credentials
-                            Collections.emptyList() // authorities (empty for now)
+                            authorities // authorities (empty for now)->now authorities are not empty
                     );
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

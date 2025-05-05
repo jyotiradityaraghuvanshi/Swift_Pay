@@ -37,7 +37,7 @@ public class WalletService {
 
         Wallet wallet = new Wallet();
         wallet.setUser(user);
-        wallet.setBalance(100000.00);
+        wallet.setBalance(walletRequestDto.getBalance());
         wallet.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
         walletRepository.save(wallet);
