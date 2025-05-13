@@ -6,6 +6,7 @@ import com.swiftpay.SwiftPay.Exception.PasswordMismatchException;
 import com.swiftpay.SwiftPay.Exception.UserNotFoundException;
 import com.swiftpay.SwiftPay.dto.RequestDto.UserLoginRequestDto;
 import com.swiftpay.SwiftPay.dto.RequestDto.UserRequestDto;
+import com.swiftpay.SwiftPay.dto.RequestDto.UserUpdateRequestDto;
 import com.swiftpay.SwiftPay.dto.ResponseDto.UserResponseDto;
 import com.swiftpay.SwiftPay.entity.RefreshToken;
 import com.swiftpay.SwiftPay.entity.User;
@@ -100,7 +101,41 @@ public class UserService {
         return map;
     }
 
+    public String getUserEmailById(Long id){
 
+        Optional<User> userOptional = userRepository.findById(id);
+        if(userOptional.isEmpty()){
+            throw new UserNotFoundException("User does not exist with user id " + id);
+        }
+
+        return userOptional
+                .get()
+                .getEmail();
+    }
+
+
+    public UserResponseDto getUserByEmails(String email){
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if(optionalUser.isEmpty()) throw new UserNotFoundException("User not found .");
+
+        return convertEntityToDto(optionalUser.get());
+    }
+
+
+    public UserUpdateRequestDto updateUserProfile(Long userId, UserUpdateRequestDto userUpdateRequestDto) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if(optionalUser.isEmpty()){
+            throw new UserNotFoundException("User Not found for id " + userId);
+        }
+
+        User user = optionalUser.get();
+        if(userUpdateRequestDto.getEmail().isPresent()) user.setEmail(String.valueOf(userUpdateRequestDto.getEmail()));
+        if(userUpdateRequestDto.getName().isPresent()) user.setName(String.valueOf(userUpdateRequestDto.getName()));
+        if (userUpdateRequestDto.getPhoneNumber().isPresent()) user.setPhoneNumber(String.valueOf(userUpdateRequestDto.getPhoneNumber()));
+
+        userRepository.save(user);
+        return userUpdateRequestDto;
+    }
 
     private UserResponseDto convertEntityToDto(User user){
         return new UserResponseDto(
@@ -122,5 +157,7 @@ public class UserService {
 
         return user;
     }
+
+
 
 }

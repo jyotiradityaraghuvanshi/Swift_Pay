@@ -4,6 +4,7 @@ package com.swiftpay.SwiftPay.services;
 import com.swiftpay.SwiftPay.Exception.InsufficientBalanceException;
 import com.swiftpay.SwiftPay.Exception.ResourceNotFoundException;
 import com.swiftpay.SwiftPay.dto.RequestDto.TransactionRequestDto;
+import com.swiftpay.SwiftPay.dto.ResponseDto.TransactionResponseDto;
 import com.swiftpay.SwiftPay.entity.Transaction;
 import com.swiftpay.SwiftPay.entity.Wallet;
 import com.swiftpay.SwiftPay.enums.TransactionStatus;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TransactionService {
@@ -70,4 +72,25 @@ public class TransactionService {
 
         return transactions.findHistoryByWallet(wallet);
     }
+
+    public TransactionResponseDto viewTransactionDetail(Long transactionId) {
+
+        Optional<Transaction> optionalTransaction = transactions.findById(transactionId);
+        if (optionalTransaction.isEmpty())
+            throw new ResourceNotFoundException("Transaction cannot be found");
+
+        return convertEntityToDto(optionalTransaction.get());
+    }
+
+
+    private static TransactionResponseDto convertEntityToDto(Transaction transaction){
+         return new TransactionResponseDto(
+                 transaction.getId(),
+                 transaction.getSenderWallet().getId(),
+                 transaction.getReceiverWallet().getId(),
+                 transaction.getAmount(),
+                 transaction.getCreatedAt()
+         );
+    }
+
 }

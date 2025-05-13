@@ -60,6 +60,16 @@ public class WalletService {
         return convertEntityToDto(wallet.get());
     }
 
+    public String getUserEmailByWalletId(Long id){
+        Optional<Wallet> optionalWallet = walletRepository.findById(id);
+        if(optionalWallet.isEmpty()) throw new WalletNotFoundException("Wallet is not created for id " + id);
+
+        return optionalWallet
+                .get()
+                .getUser()
+                .getEmail();
+    }
+
     public void saveWallet(Wallet wallet) {
         walletRepository.save(wallet);
     }
@@ -74,4 +84,13 @@ public class WalletService {
         );
     }
 
+    public String removeWallet(Long walletId) {
+
+        Optional<Wallet> walletOptional = walletRepository.findById(walletId);
+        if (walletOptional.isEmpty())
+            throw new WalletNotFoundException("Wallet is not found for this id " + walletId);
+
+        walletRepository.delete(walletOptional.get());
+        return "Wallet successfully deleted for the id " + walletId;
+    }
 }

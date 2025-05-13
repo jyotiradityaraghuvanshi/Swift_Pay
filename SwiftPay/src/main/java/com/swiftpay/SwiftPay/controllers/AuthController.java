@@ -2,6 +2,8 @@ package com.swiftpay.SwiftPay.controllers;
 
 
 import com.swiftpay.SwiftPay.dto.RequestDto.UserLoginRequestDto;
+import com.swiftpay.SwiftPay.dto.RequestDto.UserRequestDto;
+import com.swiftpay.SwiftPay.dto.ResponseDto.UserResponseDto;
 import com.swiftpay.SwiftPay.entity.RefreshToken;
 import com.swiftpay.SwiftPay.services.RefreshTokenService;
 import com.swiftpay.SwiftPay.services.UserService;
@@ -24,6 +26,12 @@ public class AuthController {
 
     @Autowired
     private RefreshTokenService refreshTokenService;
+
+
+    @PostMapping("/signup")
+    public ResponseEntity<UserResponseDto> createsUser(@Valid @RequestBody UserRequestDto userRequestDto){
+        return new ResponseEntity<>(userService.createUser(userRequestDto) , HttpStatus.CREATED);
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@Valid @RequestBody UserLoginRequestDto userLoginRequestDto){
