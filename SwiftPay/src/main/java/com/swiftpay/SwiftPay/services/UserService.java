@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,9 @@ public class UserService {
     @Autowired
     private RefreshTokenService refreshTokenService;
 
+    @Autowired
+    private MailService mailService;
+
     public UserResponseDto createUser(UserRequestDto userRequestDto){
 
         if(userRepository.existsByEmail(userRequestDto.getEmail())){
@@ -47,6 +51,14 @@ public class UserService {
 
         userRepository.save(user);
 
+        Map<String , Object> variables = new HashMap<>();
+        variables.put("name" , user.getName());
+        variables.put("timestamp" , LocalDateTime.now().toString());
+
+        mailService.sendEmail(user.getEmail()
+                , "Welcome to SwiftPay \uD83C\uDF89"
+                , "signup-email"
+                , variables);
 
         return convertEntityToDto(user);
     }
@@ -97,6 +109,15 @@ public class UserService {
         Map<String , String> map = new HashMap<>();
         map.put("accessToken" , accessToken);
         map.put("refreshToken" , refreshToken.getToken());
+
+        Map<String , Object> variables = new HashMap<>();
+        variables.put("name" , user.getName());
+        variables.put("timestamp" , LocalDateTime.now().toString());
+
+        mailService.sendEmail(userLoginRequestDto.getEmail()
+                , "SwiftPay Login Alert \uD83D\uDEA8"
+                , "login-email"
+                , variables);
 
         return map;
     }
