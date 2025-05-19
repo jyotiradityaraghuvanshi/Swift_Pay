@@ -16,12 +16,12 @@ import java.util.Optional;
 @Builder
 public class UserUpdateRequestDto {
 
-    public Optional<String> name;
+    public String name;
 
     @Email(message = "Email format is Invalid")
-    public Optional<String> email;
+    public String email;
 
     @Size(min = 6 , max = 15 , message = "Enter a valid phone number")
-    public Optional<String> phoneNumber;
+    public String phoneNumber;
 
 }

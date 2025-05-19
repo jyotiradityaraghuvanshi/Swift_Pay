@@ -48,9 +48,9 @@ public class UserController {
         return new ResponseEntity<>(userService.getUserByEmails(email) , HttpStatus.FOUND);
     }
 
-    @PreAuthorize("principal == @userService.getUserEmailById(#id) or hasRole('ADMIN')")
+    @PreAuthorize("principal == @userService.getUserEmailById(#userId) or hasRole('ADMIN')")
     @PatchMapping("/update/{userId}")
-    public ResponseEntity<UserUpdateRequestDto> updateUserDetails(@PathVariable Long userId , @RequestBody UserUpdateRequestDto userUpdateRequestDto){
+    public ResponseEntity<UserResponseDto> updateUserDetails(@PathVariable Long userId , @RequestBody UserUpdateRequestDto userUpdateRequestDto){
         return new ResponseEntity<>(userService.updateUserProfile(userId , userUpdateRequestDto) , HttpStatus.ACCEPTED);
     }
 

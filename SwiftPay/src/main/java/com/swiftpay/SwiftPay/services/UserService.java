@@ -75,7 +75,7 @@ public class UserService {
 
 
     public User getUserForServices(Long userId){
-        return userRepository.findById(userId).orElseThrow(()->{throw new UserNotFoundException("User Not found for this userId" + userId);});
+        return userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User Not found for this userId" + userId));
     }
 
     public List<UserResponseDto> getAllUser() {
@@ -143,19 +143,32 @@ public class UserService {
     }
 
 
-    public UserUpdateRequestDto updateUserProfile(Long userId, UserUpdateRequestDto userUpdateRequestDto) {
+    public UserResponseDto updateUserProfile(Long userId, UserUpdateRequestDto userUpdateRequestDto) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if(optionalUser.isEmpty()){
             throw new UserNotFoundException("User Not found for id " + userId);
         }
 
         User user = optionalUser.get();
-        if(userUpdateRequestDto.getEmail().isPresent()) user.setEmail(String.valueOf(userUpdateRequestDto.getEmail()));
-        if(userUpdateRequestDto.getName().isPresent()) user.setName(String.valueOf(userUpdateRequestDto.getName()));
-        if (userUpdateRequestDto.getPhoneNumber().isPresent()) user.setPhoneNumber(String.valueOf(userUpdateRequestDto.getPhoneNumber()));
+        if(userUpdateRequestDto.getEmail() != null) user.setEmail(userUpdateRequestDto.getEmail());
+        if(userUpdateRequestDto.getName() != null) user.setName(userUpdateRequestDto.getName());
+        if (userUpdateRequestDto.getPhoneNumber() != null) user.setPhoneNumber(userUpdateRequestDto.getPhoneNumber());
 
         userRepository.save(user);
-        return userUpdateRequestDto;
+        return convertEntityToDto(user);
+    }
+
+    public User ensureUserExist(String email) {
+        return userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("Email: " + email + " is not registered"));
+    }
+
+    public void updatePassword(String email , String newPassword){
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if(optionalUser.isEmpty()) throw new UserNotFoundException("User does not found for this email " + email);
+
+        User user = optionalUser.get();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 
     private UserResponseDto convertEntityToDto(User user){
@@ -178,7 +191,6 @@ public class UserService {
 
         return user;
     }
-
 
 
 }

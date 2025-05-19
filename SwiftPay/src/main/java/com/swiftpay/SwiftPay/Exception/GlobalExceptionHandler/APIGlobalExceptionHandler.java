@@ -65,5 +65,17 @@ public class APIGlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
+    @ExceptionHandler(OtpExpiredException.class)
+    public ResponseEntity<String> handleOtpExpiredException(OtpExpiredException e){
+        return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidOTPException.class)
+    public ResponseEntity<String> handleInvalidOtpVerification(InvalidOTPException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    // Add more exception handler methods here for handling all the run time exception globally.
+
 
 }

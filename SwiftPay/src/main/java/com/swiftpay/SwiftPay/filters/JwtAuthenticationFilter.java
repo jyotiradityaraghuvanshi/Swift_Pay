@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // ✅ 1. First, allow /api/auth/** without checking token
         String path = request.getRequestURI();
-        if (path.startsWith("/api/auth")) {
+        if (path.startsWith("/api/auth") || path.startsWith("/api/forgot-password")) {
             filterChain.doFilter(request, response);
             return; // ✅ Exit the filter early for login/register
         }
