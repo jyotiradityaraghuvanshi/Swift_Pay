@@ -33,4 +33,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER; // default Role for everyOne
 
+    public User(long l, String test, String mail) {
+    }
 }

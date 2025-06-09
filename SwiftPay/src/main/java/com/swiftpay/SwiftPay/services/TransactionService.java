@@ -11,6 +11,9 @@ import com.swiftpay.SwiftPay.enums.TransactionStatus;
 import com.swiftpay.SwiftPay.enums.TransactionType;
 import com.swiftpay.SwiftPay.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -63,14 +66,18 @@ public class TransactionService {
         return transactions.save(transaction);
     }
 
-    public List<Transaction> getHistory(Long walletId) {
+    public List<Transaction> getHistory(Long walletId , Integer pageNo , Integer pageSize) {
 
         Wallet wallet = walletService.getWallet(walletId);
         if(wallet == null){
             throw new ResourceNotFoundException("Wallet does not exist for id " + walletId);
         }
 
-        return transactions.findHistoryByWallet(wallet);
+        Pageable pageable = PageRequest.of(pageNo , pageSize);
+        Page<Transaction> transactionPage = transactions.findHistoryByWallet(wallet , pageable);
+
+        return transactionPage.getContent();
+
     }
 
     public TransactionResponseDto viewTransactionDetail(Long transactionId) {
@@ -82,6 +89,14 @@ public class TransactionService {
         return convertEntityToDto(optionalTransaction.get());
     }
 
+    public List<Transaction> getAllTransactions(Integer pageNumber, Integer pageSize) {
+
+        Pageable pageable = PageRequest.of(pageNumber , pageSize);
+
+        Page<Transaction> transactionPage = transactions.findAll(pageable);
+
+        return transactionPage.getContent();
+    }
 
     private static TransactionResponseDto convertEntityToDto(Transaction transaction){
          return new TransactionResponseDto(

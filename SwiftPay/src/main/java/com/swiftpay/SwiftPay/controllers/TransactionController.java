@@ -32,13 +32,25 @@ public class TransactionController {
     // 🔐 Only wallet owner or admin can view transaction history
     @PreAuthorize("principal == @walletService.getUserEmailByWalletId(#walletId) or hasRole('ADMIN')")
     @GetMapping("/history/{walletId}")
-    public ResponseEntity<List<Transaction>>  transactionHistory(@PathVariable("walletId") Long walletId){
-        return new ResponseEntity<>(transactionService.getHistory(walletId) , HttpStatus.OK);
+    public ResponseEntity<List<Transaction>> userTransactionHistory(
+            @PathVariable("walletId") Long walletId ,
+            @RequestParam(value = "pageNumber" , defaultValue = "0" , required = false) Integer pageNumber ,
+            @RequestParam(value = "pageSize" , defaultValue = "2" , required = false) Integer pageSize){
+        return new ResponseEntity<>(transactionService.getHistory(walletId , pageNumber , pageSize) , HttpStatus.OK);
     }
 
     @GetMapping("/{transactionId}")
     public ResponseEntity<TransactionResponseDto> viewTransaction(@PathVariable Long transactionId){
         return new ResponseEntity<>(transactionService.viewTransactionDetail(transactionId) , HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/all-transaction")
+    public ResponseEntity<List<Transaction>> getAllTransactions(
+            @RequestParam(value = "pageNumber" , defaultValue = "0" , required = false) Integer pageNumber ,
+            @RequestParam(value = "pageSize" , defaultValue = "2" , required = false) Integer pageSize
+    ){
+        return new ResponseEntity<>(transactionService.getAllTransactions(pageNumber , pageSize) , HttpStatus.ACCEPTED);
     }
 
 }

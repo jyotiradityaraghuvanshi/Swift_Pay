@@ -38,8 +38,10 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getAllUser")
-    public ResponseEntity<List<UserResponseDto>> getAllUsers(){
-        return new ResponseEntity<>(userService.getAllUser() , HttpStatus.OK);
+    public ResponseEntity<List<UserResponseDto>> getAllUsers( // added pagination feature.
+            @RequestParam(value = "pageNumber" , defaultValue = "0" , required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize" , defaultValue = "3" , required = false) Integer pageSize){
+        return new ResponseEntity<>(userService.getAllUser(pageNumber , pageSize) , HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

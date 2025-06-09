@@ -13,6 +13,9 @@ import com.swiftpay.SwiftPay.entity.User;
 import com.swiftpay.SwiftPay.repository.UserRepository;
 import com.swiftpay.SwiftPay.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -78,8 +81,12 @@ public class UserService {
         return userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User Not found for this userId" + userId));
     }
 
-    public List<UserResponseDto> getAllUser() {
-        List<User> userList = userRepository.findAll();
+    public List<UserResponseDto> getAllUser(Integer pageNo , Integer pageSize) {
+
+        Pageable pageable = PageRequest.of(pageNo , pageSize); // This interface helps me in getting paged Entity.
+        Page<User> userPage = userRepository.findAll(pageable);// Asking DB to provide only page size users only.
+
+        List<User> userList = userPage.getContent(); // Getting all the users in list from the page provided by DB .
         return userList
                 .stream()
                 .map(this::convertEntityToDto)
